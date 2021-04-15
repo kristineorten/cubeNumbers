@@ -37,14 +37,14 @@ class cubeNumbers {
         int n_max = 100;
 
         if (args.length < 2) {
-            System.out.println("Range missing, using default. Specify range like this: [filename] <min> <max>");
+            System.out.println("Range missing, using default. Specify range like this: java cubeNumbers <min> <max>");
         } else {
             // Gjør om input til int
             try{
                 n_min = Integer.parseInt(args[0]);
                 n_max = Integer.parseInt(args[1]);
             } catch(NumberFormatException e) {
-                System.out.println("Range missing, using default. Specify range like this: [filename] <min> <max>");
+                System.out.println("Range missing, using default. Specify range like this: java cubeNumbers <min> <max>");
             }
 
             // Endrer navnene dersom min er mer enn max
