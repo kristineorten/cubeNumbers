@@ -31,6 +31,35 @@ class cubeNumbers {
         return Integer.parseInt(answer_str);
     }
 
+    private static int chooseMode(Scanner in) {
+        System.out.println("Review information (1) or practice solving cubic roots (2)?");
+        int mode = 0;
+        String error = "Answer \'1\' for review or \'2\' for practice: ";
+        mode = waitForInt(in,error);
+        if (mode != 1 && mode != 2) {
+            System.out.println("Default mode (2) chosen.");
+            mode = 2;
+        }
+        return mode;
+    }
+
+    private static void practiceModeInfo(int n_min, int n_max) {
+        System.out.println("Choosing numbers in the range ["+n_min+","+n_max+"]");
+        System.out.println("Type \'exit\', \'quit\' or \'q\' to close the program.");
+        System.out.println("Type \'mode\' to change the mode.\n");
+    }
+
+    private static int verifyAnswer(int answer, int n, int streak) {
+        if (answer == n) {
+            streak +=1;
+            System.out.println("Your answer ("+n+") is correct. Streak: " + streak);
+        } else {
+            streak = 0;
+            System.out.println("Your answer is wrong. The correct answer is " + n + ".");
+        }
+        return streak;
+    }
+
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
         int n_min = 1;
@@ -39,7 +68,7 @@ class cubeNumbers {
         if (args.length < 2) {
             System.out.println("Range missing, using default. Specify range like this: java cubeNumbers <min> <max>");
         } else {
-            // Gjør om input til int
+            // Changing input to int
             try{
                 n_min = Integer.parseInt(args[0]);
                 n_max = Integer.parseInt(args[1]);
@@ -47,7 +76,7 @@ class cubeNumbers {
                 System.out.println("Range missing, using default. Specify range like this: java cubeNumbers <min> <max>");
             }
 
-            // Endrer navnene dersom min er mer enn max
+            // Changing the names if min is more than max
             if (n_min > n_max) {
                 int n_temp = n_min;
                 n_min = n_max;
@@ -55,53 +84,52 @@ class cubeNumbers {
             }
         }
 
-        System.out.println("Review information (1) or practice solving cubic roots (2)?");
-        String error = "Answer \'1\' for review or \'2\' for practice: ";
-        int mode = waitForInt(in,error);
+        // Choosing mode
+        int mode = chooseMode(in);
         int streak = 0;
 
-        if (mode == 1) {
-            reviewNumbers(n_min, n_max);
-            mode = 2;
-        }
-        if (mode == 2) {
-            System.out.println("Choosing numbers in the range ["+n_min+","+n_max+"]");
-            System.out.println("Type \'exit\', \'quit\' or \'q\' to close the program.\n");
-            boolean exit = false;
-            while (!exit) {
-                boolean answerIsNumber = false;
-                // Finner svaret
-                int n = (int)(Math.random() * ((n_max-n_min)+1) + n_min);
-                while (!answerIsNumber) {
-                    answerIsNumber = true;
-                    // Presenterer oppgaven for bruker og tar inn brukers svar
-                    System.out.println("What is the cubic root of " + n*n*n + "?");
-                    String ans_str = in.nextLine().trim().toLowerCase();
+        boolean continueGame = true;
+        while (continueGame) {
+            // Review-mode
+            if (mode == 1) {
+                reviewNumbers(n_min, n_max);
+                mode = 2;
+            }
 
-                    if (ans_str.equals("exit") || ans_str.equals("quit") || ans_str.equals("q")) {
-                        exit = true;
-                    } else {
-                        // Prøver å gjøre om til int
-                        int answer = 0;
-                        try {
-                            answer = Integer.parseInt(ans_str);
-                        } catch(NumberFormatException e) {
-                            answerIsNumber = false;
-                        }
-                        if (answerIsNumber) {
-                            // Verifiserer svaret
-                            if (answer == n) {
-                                streak +=1;
-                                System.out.println("Your answer ("+n+") is correct. Streak: " + streak);
-                            } else {
-                                streak = 0;
-                                System.out.println("Your answer is wrong. The correct answer is " + n + ".");
+            // Practice-mode
+            if (mode == 2) {
+                practiceModeInfo(n_min, n_max);
+
+                boolean continueMode = true;
+                while (continueMode) {
+                    // Randomly generating the answer
+                    int n = (int) ((Math.random() * (n_max - n_min)) + n_min);
+
+                    boolean answerIsNumber = false;
+                    while (!answerIsNumber) {
+                        answerIsNumber = true;
+
+                        // Presenting the task and getting the answer from the user
+                        System.out.println("What is the cubic root of " + n*n*n + "?");
+                        String ans_str = in.nextLine().trim().toLowerCase();
+
+                        if (ans_str.equals("exit") || ans_str.equals("quit") || ans_str.equals("q")) {
+                            continueMode = false;
+                            continueGame = false;
+                        } else if (ans_str.equals("mode")) {
+                            continueMode = false;
+                            mode = chooseMode(in);
+                        } else {
+                            answerIsNumber = isInt(ans_str,"The answer must be an integer.");
+                            if (answerIsNumber) {
+                                // Verifying the answer
+                                int answer = Integer.parseInt(ans_str);
+                                streak = verifyAnswer(answer,n,streak);
                             }
                         }
                     }
                 }
             }
         }
-
     }
 }
